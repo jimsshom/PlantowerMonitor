@@ -36,4 +36,3 @@ def readContent():
 
 
 print readContent()
-updateContent('OK!3')

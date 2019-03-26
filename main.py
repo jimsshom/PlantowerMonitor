@@ -19,6 +19,7 @@ def updateContent(text):
     r = requests.post(url=url, data=data, verify=False, cookies=cookies)
     j = r.json()
     if j['id'] == True:
+        print 'update success'
         return
     else:
         raise Exception('updateContent exception')
@@ -54,32 +55,34 @@ def readData(_port):
                 rv += ser.read(38)
                 return rv
 
+def removeOldData(content):
+    segs = content.split('Plantower PMS5003ST')
+    result = ''
+    if len(segs) > 10:
+        segs = segs[len(segs)-10:]
+    for seg in segs:
+        if seg.strip() == '':
+            continue
+        result += 'Plantower PMS5003ST' + seg
+    return result
+
 recv = readData(ser)
 tmp = recv[4:36]
 datas = struct.unpack('>hhhhhhhhhhhhhhhh', tmp)
 
 content = '''
 Plantower PMS5003ST,Updated: %s
-PM1.0(CF=1): %dug/m3
-PM2.5(CF=1): %dug/m3
-PM10 (CF=1): %dug/m3
-PM1.0 (STD): %dug/m3
-PM2.5 (STD): %dug/m3
-PM10  (STD): %dug/m3
->0.3um     : %d/0.1L
->0.5um     : %d/0.1L
->1.0um     : %d/0.1L
->2.5um     : %d/0.1L
->5.0um     : %d/0.1L
->10um      : %d/0.1L
-HCHO       : %.1fmg/m3
-Temperature: %.1fC
-Humidity   : %.1f%%
+CF=1(ug/m3) PM1.0/PM2.5/PM10: %d,%d,%d
+STD(ug/m3)  PM1.0/PM2.5/PM10: %d,%d,%d
+>(/0.1L)    0.3um/0.5um/1.0um/2.5um/5.0um/10um: %d,%d,%d,%d,%d,%d
+HCHO       : %.3fmg/m3
+Temperature: %.1fC     Humidity   : %.1f%%
 ''' % (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
         datas[0], datas[1], datas[2], datas[3], datas[4], datas[5], datas[6], datas[7], datas[8], datas[9], datas[10], datas[11], datas[12]/1000.0, datas[13]/10.0, datas[14]/10.0)
 
 print content
 
 originalContent = readContent()
-originalContent += '\n' + content
-updateContent(originalContent)
+content = originalContent + '\n' + content
+content = removeOldData(content)
+updateContent(content)
