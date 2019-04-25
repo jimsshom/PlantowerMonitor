@@ -1,9 +1,9 @@
 #!/bin/bash
-PI_IP='10.0.0.2'
+PI_IP='10.0.0.7'
 PI_USER='pi'
 PI_WORKDIR='~/PlantowerMonitor/'
 
-FILE_LIST=('getInfo.py' 'main.py' 'plantower.cron')
+FILE_LIST=('getInfo.py' 'main.py' 'plantower.cron' 'webapi.py')
 
 for FILE in ${FILE_LIST[*]}
 do
