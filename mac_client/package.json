@@ -1,0 +1,11 @@
+{
+  "name": "plantower-client-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "author": "jimsshom",
+  "license": "ISC"
+}
