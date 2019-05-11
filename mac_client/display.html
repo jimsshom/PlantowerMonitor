@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <!--
+        //CF=1(ug/m3) PM1.0/PM2.5/PM10
+        //STD(ug/m3)  PM1.0/PM2.5/PM10
+        //>(/0.1L)    0.3um/0.5um/1.0um/2.5um/5.0um/10um
+        //HCHO  Temperature   Humidity
+    -->
+    <body>
+        <ul>
+            <li>AQI_max: <span id='aqi'>--</span></li>
+            <li>甲醛：<span id='hcho'>--</span></li>
+            <li>温度：<span id='temp'>--</span>℃</li>
+            <li>湿度：<span id='hum'>--</span></li>
+        </ul>
+    </body>
+
+    <script>
+        function renderData(data) {
+            console.log(data)
+            var [cf1_10,cf1_25,cf1_100,std_10,std_25,std_100,um_3,um_5,um_10,um_25,um_50,um_100,hcho,temp,hum,check] = data.split('|')
+            var aqi = Math.max(cf1_10, cf1_25, cf1_100, std_10, std_25, std_100)
+            hcho = hcho / 1000.0
+            temp = temp / 10.0
+            hum = hum / 10.0
+            document.getElementById('aqi').innerText = aqi
+            document.getElementById('hcho').innerText = hcho
+            document.getElementById('temp').innerText = temp
+            document.getElementById('hum').innerText = hum
+        }
+
+        var request = require('request')
+        const {ipcRenderer} = require('electron')
+        ipcRenderer.on('showdata', (event, arg) => {
+            if (arg == null) {
+                return
+            }
+            ts = arg[0]
+            data = arg[1]
+            renderData(data)
+        })
+
+        // var timerID = setInterval(function() {
+        //     request('http://10.0.0.7:8080/get_plantower_data', function (error, response, body) {
+        //         renderData(body)
+        //     })
+        // }, 5 * 1000); 
+    </script>
+</html>
