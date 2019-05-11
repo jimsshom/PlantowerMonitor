@@ -11,8 +11,8 @@ const highimage = nativeImage.createFromPath('/Users/jimsshom/Works/GitRepo/Plan
 
 function createDisplayWindow(x, y) {
     dispWindow = new BrowserWindow({
-        width: 300,
-        height: 200,
+        width: 350,
+        height: 220,
         x: x,
         y: y,
         show: false,
@@ -29,6 +29,9 @@ function createDisplayWindow(x, y) {
     })
     dispWindow.on('close', () => {
         dispWindow = null
+    })
+    dispWindow.on('blur', () => {
+        closeDisplayWindow()
     })
 }
 
@@ -51,18 +54,19 @@ function createBackWindow() {
     let externalDisplay = displays.find((display) => {
         return display.bounds.x !== 0 || display.bounds.y !== 0
     })
+    let tmp_show = false
     if (externalDisplay) {
         backWindow = new BrowserWindow({
             x: externalDisplay.bounds.x + 800,
             y: externalDisplay.bounds.y + 400,
-            show: true,
+            show: tmp_show,
             webPreferences: {
                 nodeIntegration: true
             }
         })
     } else {
         backWindow = new BrowserWindow({
-            show: true,
+            show: tmp_show,
             webPreferences: {
                 nodeIntegration: true
             }
@@ -79,22 +83,35 @@ function createTray() {
             label: 'item1', type: 'radio'
         }
     ])
-    appIcon.setTitle('waiting')
-    appIcon.setToolTip('just for test')
+    appIcon.setTitle('--')
+    //appIcon.setToolTip('just for test')
     //appIcon.setContextMenu(contextMenu)
     appIcon.on('click', (event, bounds, position) => {
         //新建窗口并且实时查询
         //createDisplayWindow()
-        console.log(bounds)
-        console.log(position)
         let x = bounds.x
         let y = bounds.height
         triggerDisplayWindow(x, y)
     })
-    appIcon.on('mouse-leave', (event, position) => {
-        //关闭窗口
-        //closeDisplayWindow()
-    })
+    //mouse-leave事件不好用，体验较差
+    // appIcon.on('mouse-leave', (event, position) => {
+    //     let bounds = appIcon.getBounds()
+    //     console.log(bounds)
+    //     let delta = 100
+    //     let min_x = bounds.x - delta
+    //     let max_x = bounds.x + bounds.width + delta
+    //     let min_y = bounds.y - delta
+    //     let max_y = bounds.y + bounds.height + delta
+    //     console.log(min_x, max_x, min_y, max_y)
+    //     console.log(position)
+    //     let x = position.x
+    //     let y = position.y
+    //     if (x < min_x || x > max_x || y < min_y || y > max_y) {
+    //         console.log('CLOSE!!!')
+    //     }
+    //     //关闭窗口
+    //     //closeDisplayWindow()
+    // })
 }
 
 app.on('ready', () => {
