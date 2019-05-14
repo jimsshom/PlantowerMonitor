@@ -5,9 +5,10 @@ let appIcon
 let backWindow
 let dispWindow
 let currentData
-const lowimage = nativeImage.createFromPath('/Users/jimsshom/Works/GitRepo/PlantowerMonitor/mac_client/low.png')
-const middleimage = nativeImage.createFromPath('/Users/jimsshom/Works/GitRepo/PlantowerMonitor/mac_client/middle.png')
-const highimage = nativeImage.createFromPath('/Users/jimsshom/Works/GitRepo/PlantowerMonitor/mac_client/high.png')
+
+const lowimage = nativeImage.createFromPath(__dirname + '/low.png')
+const middleimage = nativeImage.createFromPath(__dirname + '/middle.png')
+const highimage = nativeImage.createFromPath(__dirname + '/high.png')
 
 function createDisplayWindow(x, y) {
     dispWindow = new BrowserWindow({
@@ -84,7 +85,6 @@ function createTray() {
         }
     ])
     appIcon.setTitle('--')
-    //appIcon.setToolTip('just for test')
     //appIcon.setContextMenu(contextMenu)
     appIcon.on('click', (event, bounds, position) => {
         //新建窗口并且实时查询
@@ -93,25 +93,6 @@ function createTray() {
         let y = bounds.height
         triggerDisplayWindow(x, y)
     })
-    //mouse-leave事件不好用，体验较差
-    // appIcon.on('mouse-leave', (event, position) => {
-    //     let bounds = appIcon.getBounds()
-    //     console.log(bounds)
-    //     let delta = 100
-    //     let min_x = bounds.x - delta
-    //     let max_x = bounds.x + bounds.width + delta
-    //     let min_y = bounds.y - delta
-    //     let max_y = bounds.y + bounds.height + delta
-    //     console.log(min_x, max_x, min_y, max_y)
-    //     console.log(position)
-    //     let x = position.x
-    //     let y = position.y
-    //     if (x < min_x || x > max_x || y < min_y || y > max_y) {
-    //         console.log('CLOSE!!!')
-    //     }
-    //     //关闭窗口
-    //     //closeDisplayWindow()
-    // })
 }
 
 app.on('ready', () => {

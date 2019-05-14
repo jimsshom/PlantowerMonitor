@@ -4,11 +4,15 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron --inspect=5858 ."
+    "start": "electron .",
+    "test": "electron --inspect-brk=5858 ."
   },
   "author": "jimsshom",
   "license": "ISC",
   "dependencies": {
     "electron": "^5.0.1"
+  },
+  "devDependencies": {
+    "electron-packager": "^13.1.1"
   }
 }
