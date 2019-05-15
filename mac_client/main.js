@@ -4,11 +4,41 @@ const {app, BrowserWindow, Tray, Menu, nativeImage, ipcMain} = require('electron
 let appIcon
 let backWindow
 let dispWindow
+let settingWindow
 let currentData
 
 const lowimage = nativeImage.createFromPath(__dirname + '/low.png')
 const middleimage = nativeImage.createFromPath(__dirname + '/middle.png')
 const highimage = nativeImage.createFromPath(__dirname + '/high.png')
+
+function createSettingWindow() {
+    var bounds = appIcon.getBounds()
+    settingWindow = new BrowserWindow({
+        width: 380,
+        height: 100,
+        x: bounds.x,
+        y: bounds.height,
+        show: false,
+        frame: false,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    })
+    //settingWindow.webContents.openDevTools()
+    settingWindow.loadFile('setting.html')
+    settingWindow.once('ready-to-show', () => {
+        settingWindow.show()
+    })
+    settingWindow.on('close', () => {
+        settingWindow = null
+    })
+}
+
+function closeSettingWindow() {
+    if (settingWindow != null) {
+        settingWindow.close()
+    }
+}
 
 function createDisplayWindow(x, y) {
     dispWindow = new BrowserWindow({
@@ -97,6 +127,16 @@ function createTray() {
 
 app.on('ready', () => {
     createTray()
+    ipcMain.on('updateSetting', (event, arg) => {
+        backWindow.webContents.send('settingUpdated', '')
+    })
+    ipcMain.on('openSetting', (event, arg) => {
+        createSettingWindow()
+    })
+    ipcMain.on('closeSetting', (event, arg) => {
+        closeSettingWindow()
+    })
+
     ipcMain.on('getdata', (event, arg) => {
         //CF=1(ug/m3) PM1.0/PM2.5/PM10
         //STD(ug/m3)  PM1.0/PM2.5/PM10
@@ -104,16 +144,21 @@ app.on('ready', () => {
         //HCHO  Temperature   Humidity
         ts = arg[0]
         data = arg[1]
-        var [cf1_10,cf1_25,cf1_100,std_10,std_25,std_100,um_3,um_5,um_10,um_25,um_50,um_100,hcho,temp,hum,check] = data.split('|')
-        var aqi = Math.max(cf1_10, cf1_25, cf1_100, std_10, std_25, std_100)
-        if (aqi > 120) {
+        if (data == 'requestError') {
             appIcon.setImage(highimage)
-        } else if (aqi > 70) {
-            appIcon.setImage(middleimage)
+            appIcon.setTitle('--')
         } else {
-            appIcon.setImage(lowimage)
+            var [cf1_10,cf1_25,cf1_100,std_10,std_25,std_100,um_3,um_5,um_10,um_25,um_50,um_100,hcho,temp,hum,check] = data.split('|')
+            var aqi = Math.max(cf1_10, cf1_25, cf1_100, std_10, std_25, std_100)
+            if (aqi > 120) {
+                appIcon.setImage(highimage)
+            } else if (aqi > 70) {
+                appIcon.setImage(middleimage)
+            } else {
+                appIcon.setImage(lowimage)
+            }
+            appIcon.setTitle(aqi.toString(10))
         }
-        appIcon.setTitle(aqi.toString(10))
         //mainWindow.webContents.send('showdata', arg)
         currentData = arg
         if (dispWindow != null) {

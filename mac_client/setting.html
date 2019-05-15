@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div>
+            <span style="display: inline-block; width: 100px">服务端请求: </span><input id="url" type="text" style="width: 250px"/>
+        </div>
+        <div>
+            <span style="display: inline-block; width: 100px">请求频率(秒): </span><input id="interval" type="text" style="width: 250px"/>
+        </div>
+        <br/>
+        <div style="display: flex; justify-content: center;">
+            <button onclick="updateSetting()">保存</button>
+            <button style="margin-left: 10px" onclick="closeSetting()">取消</button>
+        </div>
+    </body>
+
+    <script>
+        const {ipcRenderer} = require('electron')
+        const storage = require('electron-json-storage')
+
+        storage.has('setting', (error, hasKey) => {
+            if (error) throw error;
+            if (hasKey) {
+                storage.get('setting', (error, data) => {
+                    if (error) throw error
+                    document.getElementById('url').value = data['url']
+                    document.getElementById('interval').value = data['interval']
+                })
+            }
+        })
+
+        function updateSetting() {
+            data = {
+                url: document.getElementById('url').value,
+                interval: document.getElementById('interval').value
+            }
+            console.log(data)
+            storage.set('setting', data, (error) => {
+                if (error) throw error
+                ipcRenderer.send('updateSetting', '')
+                closeSetting()
+            })
+        }
+        function closeSetting() {
+            ipcRenderer.send('closeSetting', '')
+        }
+    </script>
+</html>

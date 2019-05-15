@@ -10,7 +10,8 @@
   "author": "jimsshom",
   "license": "ISC",
   "dependencies": {
-    "electron": "^5.0.1"
+    "electron": "^5.0.1",
+    "electron-json-storage": "^4.1.6"
   },
   "devDependencies": {
     "electron-packager": "^13.1.1"

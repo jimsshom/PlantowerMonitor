@@ -22,6 +22,8 @@
     -->
 
     <body>
+        <button style="position: fixed; right: 2px; top: 2px" onclick="openSetting()">#</button>
+
         <b>AQI_max: <span id='aqi'>--</span></b>
         <b style="left:150px; position:fixed">甲醛：<span id='hcho'>--</span></b>
         
@@ -80,7 +82,32 @@
     </body>
 
     <script>
+        const {ipcRenderer} = require('electron')
+
+        function openSetting() {
+            ipcRenderer.send('openSetting', '')
+        }
+
         function renderData(data) {
+            if (data == 'requestError') {
+                document.getElementById('aqi').innerText = '--'
+                document.getElementById('hcho').innerText = '--'
+                document.getElementById('temp').innerText = '--'
+                document.getElementById('hum').innerText = '--'
+                document.getElementById('cf1_10').innerText = '--'
+                document.getElementById('cf1_25').innerText = '--'
+                document.getElementById('cf1_100').innerText = '--'
+                document.getElementById('std_10').innerText = '--'
+                document.getElementById('std_25').innerText = '--'
+                document.getElementById('std_100').innerText = '--'
+                document.getElementById('um_3').innerText = '--'
+                document.getElementById('um_5').innerText = '--'
+                document.getElementById('um_10').innerText = '--'
+                document.getElementById('um_25').innerText = '--'
+                document.getElementById('um_50').innerText = '--'
+                document.getElementById('um_100').innerText = '--'
+                return
+            }
             console.log(data)
             var [cf1_10,cf1_25,cf1_100,std_10,std_25,std_100,um_3,um_5,um_10,um_25,um_50,um_100,hcho,temp,hum,check] = data.split('|')
             var aqi = Math.max(cf1_10, cf1_25, cf1_100, std_10, std_25, std_100)
@@ -105,8 +132,6 @@
             document.getElementById('um_100').innerText = um_100
         }
 
-        var request = require('request')
-        const {ipcRenderer} = require('electron')
         ipcRenderer.on('showdata', (event, arg) => {
             if (arg == null) {
                 return
@@ -115,11 +140,5 @@
             data = arg[1]
             renderData(data)
         })
-
-        // var timerID = setInterval(function() {
-        //     request('http://10.0.0.7:8080/get_plantower_data', function (error, response, body) {
-        //         renderData(body)
-        //     })
-        // }, 5 * 1000); 
     </script>
 </html>
