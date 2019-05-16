@@ -4,6 +4,7 @@ const options = {
     appVersion: '0.0.1',
     arch: 'x64',
     asar: false,
+    icon: './icon.icns',
     name: 'Plantower Client',
     out: '../out',
     platform: 'darwin',
